@@ -127,7 +127,8 @@ void updateButtons(int buttonReads[6]) {
 	
 	for (int i = 0; i < 6; i++) {
 		// if the button is being pressed
-		if (buttonReads[i] == 0 && fallingEdge[i]) {
+		if (buttonReads[i] == 0 && fallingEdge[i] && (millis() - bounceTimes[i])
+			> bounceDelay) {
 			// Update ledStates and write to LEDs
 			ledStates[i] = !ledStates[i];
 			digitalWrite(ledPins[i], ledStates[i]);
@@ -135,14 +136,15 @@ void updateButtons(int buttonReads[6]) {
 			// Play the macro
 			sendStrokes(i, ledStates[i]);
 			
+			fallingEdge[i] = false;
+			
+		}
+		else if (buttonReads[i]) {
+			fallingEdge[i] = true;
 			// Debouncing. We won't re-enter this statement until after
 			// debounce period.
 			bounceTimes[i] = millis();
-			fallingEdge[i] = false;
-		}
-		// only re-enable falling edge detection after debounce period
-		else if (buttonReads[i] && (millis() - bounceTimes[i]) > bounceDelay) {
-			fallingEdge[i] = true;
+			
 		}
 	}
 }
@@ -167,11 +169,11 @@ void sendStrokes(int button, int state) {
 	else if (button == 1) {
 		if (state) {
 			Serial.println("Button 2 HIGH!");
-			midiOn(button);
+			midiOn(button, 64);
 		}
 		else {
 			Serial.println("Button 2 LOW!");
-			midiOff(button);
+			midiOff(button, 0);
 		}	
 	}
 	else if (button == 2) {
