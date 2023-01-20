@@ -157,23 +157,21 @@ void sendStrokes(int button, int state) {
 	if (button == 0) {
 		if (state) {
 			Serial.println("Button 1 HIGH!");
-			midiEventPacket_t noteOn = {0x09, 0x90 | 0, 48, 64};
-			MidiUSB.sendMIDI(noteOn);
-			MidiUSB.flush();
+			midiOn(button, 64);
 		}
 		else {
 			Serial.println("Button 1 LOW!");
-			midiEventPacket_t noteOff = {0x08, 0x80 | 0, 48, 0};
-			MidiUSB.sendMIDI(noteOff);
-			MidiUSB.flush();
+			midiOff(button, 0);
 		}
 	}
 	else if (button == 1) {
 		if (state) {
 			Serial.println("Button 2 HIGH!");
+			midiOn(button);
 		}
 		else {
 			Serial.println("Button 2 LOW!");
+			midiOff(button);
 		}	
 	}
 	else if (button == 2) {
@@ -210,4 +208,21 @@ void sendStrokes(int button, int state) {
 	}
 	
 }
-	
+
+
+void midiOn(byte note, byte velocity) {
+	// params: event (0x09 is noteOn), event w/ channel (?idk), note, velocity)
+	midiEventPacket_t noteOn = {0x09, 0x90 | 0, note, velocity};
+	MidiUSB.sendMIDI(noteOn);
+	// flush pushes the midi event through NOW
+	MidiUSB.flush();
+}
+
+
+void midiOff(byte note, byte velocity) {
+	// params: event (0x08 is noteOff), event w/ channel (?idk), note, velocity)
+	midiEventPacket_t noteOff = {0x08, 0x80 | 0, note, velocity};
+	MidiUSB.sendMIDI(noteOff);
+	// flush pushes the midi event through NOW
+	MidiUSB.flush();
+}
