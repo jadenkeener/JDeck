@@ -179,9 +179,11 @@ void sendStrokes(int button, int state) {
 	else if (button == 2) {
 		if (state) {
 			Serial.println("Button 3 HIGH!");
+			midiVolume(0, 127);
 		}
 		else {
 			Serial.println("Button 3 LOW!");
+			midiVolume(0, 0);
 		}	
 	}
 	else if (button == 3) {
@@ -226,5 +228,14 @@ void midiOff(byte note, byte velocity) {
 	midiEventPacket_t noteOff = {0x08, 0x80 | 0, note, velocity};
 	MidiUSB.sendMIDI(noteOff);
 	// flush pushes the midi event through NOW
+	MidiUSB.flush();
+}
+
+
+void midiVolume(byte channel, byte value) {
+	/* params: event (0x0B is controller, event w/ channel, controller object
+	   (0x07 is volume), value */
+	midiEventPacket_t volumeChange = {0x0B, 0xB0 | channel, 0x07, value};
+	MidiUSB.sendMIDI(volumeChange);
 	MidiUSB.flush();
 }
