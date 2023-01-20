@@ -34,6 +34,7 @@ int buttonReads[6] = {0};
 #define knobPin3 A1
 int knobPins[3] = {knobPin1,knobPin2,knobPin3};
 int knobReads[3] = {0};
+int lastKnobReads[3] = {0};
 
 
 // LED Pins
@@ -108,10 +109,29 @@ void loop() {
 		knobReads[i] = analogRead(knobPins[i]);
 	}
 
-	// toggle LEDs on falling edge of buttons
+
 	updateButtons(buttonReads);
+
+	updateKnobs(knobReads);
 	
+	delay(1);
 }
+
+
+
+void updateKnobs(int knobReads[3]) {
+	byte level = 0; 
+	for (byte i = 0; i < 3; i++) {
+		if (abs(knobReads[i] - lastKnobReads[i]) > 5) {
+			level = knobReads[i]*0.124;
+			midiVolume(i, level);
+			lastKnobReads[i] = knobReads[i];
+		}
+		
+	}
+}
+
+
 
 
 
