@@ -15,33 +15,34 @@ Features:
 
 
 #include <Keyboard.h>
+#include <MIDIUSB.h>
 
 // Push button pins
-int buttonPin1 = 7;
-int buttonPin2 = 8;
-int buttonPin3 = 9;
-int buttonPin4 = 14;
-int buttonPin5 = 16;
-int buttonPin6 = 10;
+#define buttonPin1 7
+#define buttonPin2 8
+#define buttonPin3 9
+#define buttonPin4 14
+#define buttonPin5 16
+#define buttonPin6 10
 int buttonPins[6] = {buttonPin1,buttonPin2,buttonPin3,buttonPin4,buttonPin5,
 					 buttonPin6};
 int buttonReads[6] = {0};
 
 // Pot pins
-int knobPin1 = A3;
-int knobPin2 = A2;
-int knobPin3 = A1;
+#define knobPin1 A3
+#define knobPin2 A2
+#define knobPin3 A1
 int knobPins[3] = {knobPin1,knobPin2,knobPin3};
 int knobReads[3] = {0};
 
 
 // LED Pins
-int ledPin1 = 3;
-int ledPin2 = 4;
-int ledPin3 = 5;
-int ledPin4 = 6;
-int ledPin5 = 18;
-int ledPin6 = 15;
+#define ledPin1 3
+#define ledPin2 4
+#define ledPin3 5
+#define ledPin4 6
+#define ledPin5 18
+#define ledPin6 15
 int ledPins[6] = {ledPin1,ledPin2,ledPin3,ledPin4,ledPin5,ledPin6};
 bool ledStates[6] = {0}; // not sure if you can assign arrays like this
 
@@ -156,9 +157,15 @@ void sendStrokes(int button, int state) {
 	if (button == 0) {
 		if (state) {
 			Serial.println("Button 1 HIGH!");
+			midiEventPacket_t noteOn = {0x09, 0x90 | 0, 48, 64};
+			MidiUSB.sendMIDI(noteOn);
+			MidiUSB.flush();
 		}
 		else {
 			Serial.println("Button 1 LOW!");
+			midiEventPacket_t noteOff = {0x08, 0x80 | 0, 48, 0};
+			MidiUSB.sendMIDI(noteOff);
+			MidiUSB.flush();
 		}
 	}
 	else if (button == 1) {
