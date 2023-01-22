@@ -45,7 +45,7 @@ int lastKnobReads[3] = {0};
 #define ledPin5 18
 #define ledPin6 15
 int ledPins[6] = {ledPin1,ledPin2,ledPin3,ledPin4,ledPin5,ledPin6};
-bool ledStates[6] = {0}; // not sure if you can assign arrays like this
+bool ledStates[6] = {0,1,0,0,0,0}; // modify these to change button initial states
 
 // Debouncing and falling edge detection
 unsigned long bounceTimes[6] = {0}; // don't change, used for storage
@@ -59,6 +59,11 @@ void setup() {
 	// init serial
 	Serial.begin(9600);
 	
+  // init keyboard
+  Keyboard.begin();
+
+  // init buttons
+  initButtons();
 	
 	// set DDRs
 	for (int i : buttonPins) {
@@ -120,6 +125,15 @@ void updateKnobs(int knobReads[3]) {
 	}
 }
 
+// Initialize buttons
+void initButtons() {
+  for (byte i = 0; i < 5; i++) {
+    if (ledStates[i] == 1) {
+      digitalWrite(ledPins[i], ledStates[i]);
+      sendStrokes(i, 1);
+    }
+  }
+}
 
 
 
@@ -189,40 +203,68 @@ void sendStrokes(int button, int state) {
 		if (state) {
 			Serial.println("Button 3 HIGH!");
 			midiOn(button, 64);
+      if (ledStates[5] != 1) {
+        Keyboard.press(KEY_LEFT_ALT);
+        Keyboard.press(KEY_LEFT_CTRL);
+        Keyboard.press(KEY_F7);
+        Keyboard.releaseAll();
+      }
 		}
 		else {
 			Serial.println("Button 3 LOW!");
 			midiOff(button, 0);
+      if (ledStates[5] != 1) {
+        Keyboard.press(KEY_LEFT_ALT);
+        Keyboard.press(KEY_LEFT_CTRL);
+        Keyboard.press(KEY_F7);
+        Keyboard.releaseAll();
+      }
 		}	
 	}
 	else if (button == 3) {
 		if (state) {
 			Serial.println("Button 4 HIGH!");
       midiOn(button, 64);
+      
 		}
 		else {
 			Serial.println("Button 4 LOW!");
       midiOff(button, 0);
+      
 		}	
 	}
 	else if (button == 4) {
 		if (state) {
 			Serial.println("Button 5 HIGH!");
       midiOn(button, 64);
+      
 		}
 		else {
 			Serial.println("Button 5 LOW!");
       midiOff(button, 0);
+      
 		}	
 	}
 	else if (button == 5) {
 		if (state) {
 			Serial.println("Button 6 HIGH!");
       midiOn(button, 64);
+      if (ledStates[2] != 1) {
+        Keyboard.press(KEY_LEFT_ALT);
+        Keyboard.press(KEY_LEFT_CTRL);
+        Keyboard.press(KEY_F7);
+        Keyboard.releaseAll();
+      }
 		}
 		else {
 			Serial.println("Button 6 LOW!");
       midiOff(button, 0);
+      if (ledStates[2] != 1) {
+        Keyboard.press(KEY_LEFT_ALT);
+        Keyboard.press(KEY_LEFT_CTRL);
+        Keyboard.press(KEY_F7);
+        Keyboard.releaseAll();
+      }
 		}	
 	}
 	
