@@ -72,26 +72,7 @@ void setup() {
 	for (int i : ledPins) {
 		pinMode(i, OUTPUT);
 	}
-	
-	
-	// // set DDRs
-	// pinMode(buttonPin1, INPUT_PULLUP);
-	// pinMode(buttonPin2, INPUT_PULLUP);
-	// pinMode(buttonPin3, INPUT_PULLUP);
-	// pinMode(buttonPin4, INPUT_PULLUP);
-	// pinMode(buttonPin5, INPUT_PULLUP);
-	// pinMode(buttonPin6, INPUT_PULLUP);
-	
-	// pinMode(knobPin1, INPUT);
-	// pinMode(knobPin2, INPUT);
-	// pinMode(knobPin3, INPUT);
-	
-	// pinMode(ledPin1, OUTPUT);
-	// pinMode(ledPin2, OUTPUT);
-	// pinMode(ledPin3, OUTPUT);
-	// pinMode(ledPin4, OUTPUT);
-	// pinMode(ledPin5, OUTPUT);
-	// pinMode(ledPin6, OUTPUT);
+  
 }
 
 
@@ -107,12 +88,15 @@ void loop() {
 	// read pots
 	for (int i = 0; i <3; i++) {
 		knobReads[i] = analogRead(knobPins[i]);
+    Serial.print(i);
+    Serial.print(": ");
+    Serial.print(knobReads[i]);
+    Serial.println();
 	}
 
 
 	updateButtons(buttonReads);
-
-	updateKnobs(knobReads);
+	//updateKnobs(knobReads);
 	
 	delay(1);
 }
@@ -122,10 +106,15 @@ void loop() {
 void updateKnobs(int knobReads[3]) {
 	byte level = 0; 
 	for (byte i = 0; i < 3; i++) {
+		// this if condition gets rid of noise
 		if (abs(knobReads[i] - lastKnobReads[i]) > 5) {
-			level = knobReads[i]*0.124;
+			level = 127-knobReads[i]*0.124;
 			midiVolume(i, level);
 			lastKnobReads[i] = knobReads[i];
+      Serial.print(i);
+      Serial.print(": ");
+      Serial.print(level);
+      Serial.println(")");
 		}
 		
 	}
@@ -199,35 +188,41 @@ void sendStrokes(int button, int state) {
 	else if (button == 2) {
 		if (state) {
 			Serial.println("Button 3 HIGH!");
-			midiVolume(0, 127);
+			midiOn(button, 64);
 		}
 		else {
 			Serial.println("Button 3 LOW!");
-			midiVolume(0, 0);
+			midiOff(button, 0);
 		}	
 	}
 	else if (button == 3) {
 		if (state) {
 			Serial.println("Button 4 HIGH!");
+      midiOn(button, 64);
 		}
 		else {
 			Serial.println("Button 4 LOW!");
+      midiOff(button, 0);
 		}	
 	}
 	else if (button == 4) {
 		if (state) {
 			Serial.println("Button 5 HIGH!");
+      midiOn(button, 64);
 		}
 		else {
 			Serial.println("Button 5 LOW!");
+      midiOff(button, 0);
 		}	
 	}
 	else if (button == 5) {
 		if (state) {
 			Serial.println("Button 6 HIGH!");
+      midiOn(button, 64);
 		}
 		else {
 			Serial.println("Button 6 LOW!");
+      midiOff(button, 0);
 		}	
 	}
 	
